@@ -4,9 +4,19 @@ import '../services/data_service.dart';
 import '../services/ad_service.dart';
 import '../services/purchase_service.dart';
 
-// Data Service Provider
+// This provider handles the async initialization of the DataService.
+final dataServiceInitializerProvider = FutureProvider<DataService>((ref) async {
+  final dataService = DataService.instance;
+  await dataService.initialize();
+  return dataService;
+});
+
+// This provider exposes the initialized DataService instance.
+// It should only be accessed after the FutureProvider has successfully completed.
+// The UI layer (e.g., a root widget) will be responsible for ensuring this.
 final dataServiceProvider = Provider<DataService>((ref) {
-  return DataService.instance;
+  // .value will be non-null when the UI is built after the future completes.
+  return ref.watch(dataServiceInitializerProvider).value!;
 });
 
 // Vault Provider

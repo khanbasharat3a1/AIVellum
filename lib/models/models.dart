@@ -229,22 +229,22 @@ class UserPurchase extends HiveObject {
 // App Settings Model
 @HiveType(typeId: 4)
 class AppSettings extends HiveObject {
-  @HiveField(0)
+  @HiveField(0, defaultValue: false)
   bool isDarkMode;
   
-  @HiveField(1)
+  @HiveField(1, defaultValue: false)
   bool hasLifetimeAccess;
   
   @HiveField(2)
   DateTime? lastAdShown;
   
-  @HiveField(3)
+  @HiveField(3, defaultValue: 0)
   int promptsViewedCount;
   
-  @HiveField(4)
+  @HiveField(4, defaultValue: 'en')
   String preferredLanguage;
 
-  @HiveField(5)
+  @HiveField(5, defaultValue: false)
   bool hasSeenOnboarding;
 
   AppSettings({
