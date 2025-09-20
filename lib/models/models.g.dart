@@ -236,13 +236,14 @@ class AppSettingsAdapter extends TypeAdapter<AppSettings> {
       lastAdShown: fields[2] as DateTime?,
       promptsViewedCount: fields[3] as int,
       preferredLanguage: fields[4] as String,
+      hasSeenOnboarding: fields[5] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, AppSettings obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.isDarkMode)
       ..writeByte(1)
@@ -252,7 +253,9 @@ class AppSettingsAdapter extends TypeAdapter<AppSettings> {
       ..writeByte(3)
       ..write(obj.promptsViewedCount)
       ..writeByte(4)
-      ..write(obj.preferredLanguage);
+      ..write(obj.preferredLanguage)
+      ..writeByte(5)
+      ..write(obj.hasSeenOnboarding);
   }
 
   @override

@@ -76,7 +76,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   void _finishOnboarding() {
     // Mark onboarding as completed
-    ref.read(appSettingsProvider.notifier).incrementPromptsViewed();
+    ref.read(appSettingsProvider.notifier).setHasSeenOnboarding();
     context.go(AppRoutes.home);
   }
 
