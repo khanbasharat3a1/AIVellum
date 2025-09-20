@@ -27,6 +27,12 @@ final allPromptsProvider = Provider<List<Prompt>>((ref) {
   return dataService.getAllPrompts();
 });
 
+// Category by ID Provider
+final categoryByIdProvider = Provider.family<Category?, String>((ref, categoryId) {
+  final dataService = ref.watch(dataServiceProvider);
+  return dataService.getCategoryById(categoryId);
+});
+
 // Category Prompts Provider
 final categoryPromptsProvider = Provider.family<List<Prompt>, String>((ref, categoryId) {
   final dataService = ref.watch(dataServiceProvider);
@@ -101,6 +107,19 @@ class AppSettingsNotifier extends StateNotifier<AppSettings> {
       lastAdShown: state.lastAdShown,
       promptsViewedCount: state.promptsViewedCount,
       preferredLanguage: language,
+      hasSeenOnboarding: state.hasSeenOnboarding,
+    );
+    await _dataService.updateAppSettings(state);
+  }
+
+  Future<void> setHasSeenOnboarding() async {
+    state = AppSettings(
+      isDarkMode: state.isDarkMode,
+      hasLifetimeAccess: state.hasLifetimeAccess,
+      lastAdShown: state.lastAdShown,
+      promptsViewedCount: state.promptsViewedCount,
+      preferredLanguage: state.preferredLanguage,
+      hasSeenOnboarding: true,
     );
     await _dataService.updateAppSettings(state);
   }
