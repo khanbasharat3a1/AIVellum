@@ -7,8 +7,10 @@ import '../../navigation/app_router.dart';
 import '../../providers/app_providers.dart';
 import '../../widgets/cards/prompt_card.dart';
 import '../../widgets/common/loading_shimmer.dart';
+import '../../models/models.dart';
 import '../../widgets/ads/banner_ad_widget.dart';
 import '../../services/ad_service.dart';
+import '../../config/app_config.dart';
 
 class CategoryScreen extends ConsumerStatefulWidget {
   final String categoryId;
@@ -33,11 +35,10 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
     
     // Track screen view
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final category = ref.read(categoriesProvider).firstWhere(
-        (cat) => cat.id == widget.categoryId,
-        orElse: () => throw Exception('Category not found'),
-      );
-      NavigationAnalytics.trackScreenView('category_${category.name.toLowerCase()}');
+      final category = ref.read(categoryByIdProvider(widget.categoryId));
+      if (category != null) {
+        NavigationAnalytics.trackScreenView('category_${category.name.toLowerCase()}');
+      }
     });
   }
 
@@ -57,16 +58,17 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final categories = ref.watch(categoriesProvider);
+    final category = ref.watch(categoryByIdProvider(widget.categoryId));
     final prompts = ref.watch(categoryPromptsProvider(widget.categoryId));
     final settings = ref.watch(appSettingsProvider);
     final theme = Theme.of(context);
 
-    // Find the current category
-    final category = categories.firstWhere(
-      (cat) => cat.id == widget.categoryId,
-      orElse: () => throw Exception('Category not found'),
-    );
+    if (category == null) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Error')),
+        body: const Center(child: Text('Category not found.')),
+      );
+    }
 
     final freePrompts = prompts.take(AppConfig.freePromptsPerCategory).toList();
     final premiumPrompts = prompts.skip(AppConfig.freePromptsPerCategory).toList();
@@ -266,10 +268,10 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
     );
   }
 
-  Widget _buildStatsSection(BuildContext context, List<dynamic> prompts, dynamic settings) {
+  Widget _buildStatsSection(BuildContext context, List<Prompt> prompts, AppSettings settings) {
     final theme = Theme.of(context);
-    final unlockedCount = settings.hasLifetimeAccess 
-        ? prompts.length 
+    final unlockedCount = settings.hasLifetimeAccess
+        ? prompts.length
         : AppConfig.freePromptsPerCategory;
 
     return Container(
@@ -380,7 +382,7 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
     );
   }
 
-  Widget _buildPromptsGrid(List<dynamic> prompts, {required bool isFree}) {
+  Widget _buildPromptsGrid(List<Prompt> prompts, {required bool isFree}) {
     return AnimationLimiter(
       child: GridView.builder(
         shrinkWrap: true,
@@ -393,6 +395,7 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
         ),
         itemCount: prompts.length,
         itemBuilder: (context, index) {
+          final prompt = prompts[index];
           return AnimationConfiguration.staggeredGrid(
             position: index,
             duration: AppConfig.mediumAnimationDuration,
@@ -401,8 +404,8 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
               verticalOffset: 30,
               child: FadeInAnimation(
                 child: PromptCard(
-                  prompt: prompts[index],
-                  onTap: () => _handlePromptTap(prompts[index], isFree),
+                  prompt: prompt,
+                  onTap: () => _handlePromptTap(prompt, isFree),
                   showLockIcon: !isFree,
                 ),
               ),
@@ -496,23 +499,23 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
     );
   }
 
-  void _handlePromptTap(dynamic prompt, bool isFree) async {
+  void _handlePromptTap(Prompt prompt, bool isFree) async {
     final settings = ref.read(appSettingsProvider);
-    
+
     // Check if user can access the prompt
-    final canAccess = isFree || 
-                     settings.hasLifetimeAccess || 
-                     ref.read(dataServiceProvider).isPromptUnlocked(prompt.id);
+    final canAccess = isFree ||
+        settings.hasLifetimeAccess ||
+        ref.read(dataServiceProvider).isPromptUnlocked(prompt.id);
 
     if (canAccess) {
       // Add to recently viewed
       ref.read(recentlyViewedProvider.notifier).addRecentPrompt(prompt.id);
-      
+
       // Show interstitial ad if needed
       final shouldShowAd = ref.read(adServiceProvider).shouldShowInterstitialAd(
-        settings.promptsViewedCount,
-      );
-      
+            settings.promptsViewedCount,
+          );
+
       if (shouldShowAd && !settings.hasLifetimeAccess) {
         await ref.read(adServiceProvider).showInterstitialAd();
         ref.read(appSettingsProvider.notifier).updateLastAdShown();
@@ -520,7 +523,7 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
 
       // Navigate to prompt
       context.goToPrompt(prompt.id, categoryId: widget.categoryId);
-      
+
       // Increment viewed count
       ref.read(appSettingsProvider.notifier).incrementPromptsViewed();
     } else {
@@ -529,7 +532,7 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
     }
   }
 
-  void _showPurchaseDialog(dynamic prompt) {
+  void _showPurchaseDialog(Prompt prompt) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -576,12 +579,14 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
     );
   }
 
-  void _shareCategory(dynamic category) {
-    // Implement sharing functionality
+  void _shareCategory(Category category) {
+    final textToShare =
+        'Check out the "${category.name}" category in the Aivellum app! It has great prompts for ${category.description}.';
+    Share.share(textToShare, subject: 'Aivellum Prompt Category');
     NavigationAnalytics.trackButtonTap('share_category', 'category_screen');
   }
 
-  void _showCategoryInfo(dynamic category) {
+  void _showCategoryInfo(Category category) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
