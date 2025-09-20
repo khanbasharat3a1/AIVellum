@@ -1,0 +1,10 @@
+// lib/screens/screens.dart
+export 'category/category_screen.dart';
+export 'favorites/favorites_screen.dart';
+export 'home/home_screen.dart';
+export 'onboarding/onboarding_screen.dart';
+export 'prompt/prompt_screen.dart';
+export 'purchase/purchase_screen.dart';
+export 'search/search_screen.dart';
+export 'settings/settings_screen.dart';
+export 'splash_screen.dart';
