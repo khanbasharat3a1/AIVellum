@@ -3,11 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'config/app_config.dart';
-import 'services/data_service.dart';
-import 'services/ad_service.dart';
-import 'services/purchase_service.dart';
 import 'providers/app_providers.dart';
 import 'navigation/app_router.dart';
+import 'screens/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,29 +24,7 @@ void main() async {
     systemNavigationBarIconBrightness: Brightness.dark,
   ));
 
-  // Initialize services
-  await _initializeServices();
-
   runApp(const ProviderScope(child: AivellumApp()));
-}
-
-Future<void> _initializeServices() async {
-  try {
-    // Initialize data service (Hive, load JSON data)
-    await DataService.instance.initialize();
-    print('✅ Data service initialized');
-
-    // Initialize ad service
-    await AdService().initialize();
-    print('✅ Ad service initialized');
-
-    // Initialize purchase service
-    await PurchaseService().initialize();
-    print('✅ Purchase service initialized');
-
-  } catch (e) {
-    print('❌ Error initializing services: $e');
-  }
 }
 
 class AivellumApp extends ConsumerWidget {
@@ -56,6 +32,65 @@ class AivellumApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final dataServiceAsync = ref.watch(dataServiceInitializerProvider);
+
+    return dataServiceAsync.when(
+      data: (dataService) {
+        // Data service is initialized, now we can build the main app and router.
+        return const AppRouterInitializer();
+      },
+      loading: () {
+        // Show a simple splash screen while initializing
+        return const MaterialApp(
+          home: SplashScreen(),
+          debugShowCheckedModeBanner: false,
+        );
+      },
+      error: (error, stackTrace) {
+        // Show an error widget if initialization fails
+        return AppErrorWidget(
+          error: 'Failed to initialize application: $error',
+          onRetry: () => ref.invalidate(dataServiceInitializerProvider),
+        );
+      },
+    );
+  }
+}
+
+/// A widget that initializes the router and performs the initial navigation.
+class AppRouterInitializer extends ConsumerStatefulWidget {
+  const AppRouterInitializer({super.key});
+
+  @override
+  ConsumerState<AppRouterInitializer> createState() =>
+      _AppRouterInitializerState();
+}
+
+class _AppRouterInitializerState extends ConsumerState<AppRouterInitializer> {
+  @override
+  void initState() {
+    super.initState();
+    // Perform navigation after the first frame to ensure the router is ready.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _performInitialNavigation();
+    });
+  }
+
+  void _performInitialNavigation() {
+    final settings = ref.read(appSettingsProvider);
+    final router = ref.read(routerProvider);
+
+    // Based on whether the user has seen the onboarding, navigate to the
+    // correct initial screen.
+    if (settings.hasSeenOnboarding) {
+      router.go(AppRoutes.home);
+    } else {
+      router.go(AppRoutes.onboarding);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final isDarkMode = ref.watch(themeProvider);
     final router = ref.watch(routerProvider);
 
