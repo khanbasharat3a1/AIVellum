@@ -226,17 +226,20 @@ class AppSettingsAdapter extends TypeAdapter<AppSettings> {
 
   @override
   AppSettings read(BinaryReader reader) {
+    // NOTE: This file was manually edited because the build_runner could not be
+    // executed in the agent's environment. The changes reflect the addition
+    // of defaultValues to the @HiveField annotations in the AppSettings class.
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return AppSettings(
-      isDarkMode: fields[0] as bool,
-      hasLifetimeAccess: fields[1] as bool,
+      isDarkMode: fields[0] as bool? ?? false,
+      hasLifetimeAccess: fields[1] as bool? ?? false,
       lastAdShown: fields[2] as DateTime?,
-      promptsViewedCount: fields[3] as int,
-      preferredLanguage: fields[4] as String,
-      hasSeenOnboarding: fields[5] as bool,
+      promptsViewedCount: fields[3] as int? ?? 0,
+      preferredLanguage: fields[4] as String? ?? 'en',
+      hasSeenOnboarding: fields[5] as bool? ?? false,
     );
   }
 
