@@ -93,7 +93,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       
       // Check if this is first launch
       final settings = dataService.getAppSettings();
-      if (settings.promptsViewedCount == 0) {
+      if (!settings.hasSeenOnboarding) {
         // First time user - go to onboarding
         if (mounted) {
           context.go(AppRoutes.onboarding);

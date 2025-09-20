@@ -244,11 +244,15 @@ class AppSettings extends HiveObject {
   @HiveField(4)
   String preferredLanguage;
 
+  @HiveField(5)
+  bool hasSeenOnboarding;
+
   AppSettings({
     this.isDarkMode = false,
     this.hasLifetimeAccess = false,
     this.lastAdShown,
     this.promptsViewedCount = 0,
     this.preferredLanguage = 'en',
+    this.hasSeenOnboarding = false,
   });
 }
