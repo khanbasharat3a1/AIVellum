@@ -226,14 +226,14 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
                 if (premiumPrompts.isNotEmpty) ...[
                   _buildSectionHeader(
                     'Premium Prompts',
-                    settings.hasLifetimeAccess 
+                    settings.hasLifetimeAccess
                         ? '${premiumPrompts.length} unlocked'
                         : '${premiumPrompts.length} locked',
-                    settings.hasLifetimeAccess 
-                        ? Icons.lock_open_rounded 
+                    settings.hasLifetimeAccess
+                        ? Icons.lock_open_rounded
                         : Icons.lock_rounded,
-                    settings.hasLifetimeAccess 
-                        ? AppTheme.successColor 
+                    settings.hasLifetimeAccess
+                        ? AppTheme.successColor
                         : AppTheme.warningColor,
                   ),
                   const SizedBox(height: 16),

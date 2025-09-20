@@ -63,6 +63,7 @@ class AppSettingsNotifier extends StateNotifier<AppSettings> {
       lastAdShown: state.lastAdShown,
       promptsViewedCount: state.promptsViewedCount,
       preferredLanguage: state.preferredLanguage,
+      hasSeenOnboarding: state.hasSeenOnboarding,
     );
     await _dataService.updateAppSettings(state);
   }
@@ -74,6 +75,7 @@ class AppSettingsNotifier extends StateNotifier<AppSettings> {
       lastAdShown: state.lastAdShown,
       promptsViewedCount: state.promptsViewedCount,
       preferredLanguage: state.preferredLanguage,
+      hasSeenOnboarding: state.hasSeenOnboarding,
     );
     await _dataService.updateAppSettings(state);
   }
@@ -85,6 +87,7 @@ class AppSettingsNotifier extends StateNotifier<AppSettings> {
       lastAdShown: state.lastAdShown,
       promptsViewedCount: state.promptsViewedCount + 1,
       preferredLanguage: state.preferredLanguage,
+      hasSeenOnboarding: state.hasSeenOnboarding,
     );
     await _dataService.updateAppSettings(state);
   }
@@ -96,6 +99,7 @@ class AppSettingsNotifier extends StateNotifier<AppSettings> {
       lastAdShown: DateTime.now(),
       promptsViewedCount: state.promptsViewedCount,
       preferredLanguage: state.preferredLanguage,
+      hasSeenOnboarding: state.hasSeenOnboarding,
     );
     await _dataService.updateAppSettings(state);
   }
