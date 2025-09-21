@@ -8,7 +8,6 @@
 
 [![Flutter Version](https://img.shields.io/badge/Flutter-3.10+-blue.svg)](https://flutter.dev/)
 [![Dart Version](https://img.shields.io/badge/Dart-3.0+-blue.svg)](https://dart.dev/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 </div>
 
@@ -438,15 +437,10 @@ Use GitHub issues with the following labels:
 - `documentation`: Documentation needs improvement
 - `performance`: Performance related issues
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 📞 Support
 
-- **Email**: support@aivellum.com
-- **GitHub Issues**: [Create an issue](https://github.com/yourusername/aivellum/issues)
-- **Documentation**: [Visit our docs](https://docs.aivellum.com)
+- **Email**: khanbasharat3a1@gmail.com
 
 ## 🙏 Acknowledgments
 
