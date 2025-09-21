@@ -2,7 +2,6 @@
 
 <div align="center">
 
-![Aivellum Logo](assets/images/logo.png)
 
 **A modern Flutter app showcasing curated AI prompts with monetization features**
 
