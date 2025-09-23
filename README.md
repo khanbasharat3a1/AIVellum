@@ -451,5 +451,5 @@ Use GitHub issues with the following labels:
 ---
 
 <div align="center">
-Made with ❤️ by the Aivellum team
+Made with ❤️ by the Khan Basharat
 </div>
